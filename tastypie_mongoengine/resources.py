@@ -34,15 +34,19 @@ from django.core.urlresolvers import Resolver404
 # MongoEngine code might not expose these query terms, so we fallback to hard-coded values.
 
 QUERY_TERMS_ALL = getattr(mongoengine_tranform, 'MATCH_OPERATORS', (
-    'ne', 'gt', 'gte', 'lt', 'lte', 'in', 'nin', 'mod', 'all', 'size', 'exists', 'not', 'within_distance', 'within_spherical_distance', 'within_box', 'within_polygon', 'near', 'near_sphere', 'contains', 'icontains', 'startswith', 'istartswith', 'endswith', 'iendswith', 'exact', 'iexact', 'match'
+    'ne', 'gt', 'gte', 'lt', 'lte', 'in', 'nin', 'mod', 'all', 'size', 'exists', 'not', 'within_distance',
+    'within_spherical_distance', 'within_box', 'within_polygon', 'near', 'near_sphere', 'contains', 'icontains',
+    'startswith', 'istartswith', 'endswith', 'iendswith', 'exact', 'iexact', 'match'
 ))
 
 
 class Query(object):
-    query_terms = dict([(query_term, None) for query_term in QUERY_TERMS_ALL])
+    query_terms = set(QUERY_TERMS_ALL)
+
 
 if not hasattr(queryset.QuerySet, 'query'):
     queryset.QuerySet.query = Query()
+
 
 CONTENT_TYPE_RE = re.compile(r'.*; type=([\w\d-]+);?')
 
