@@ -726,7 +726,7 @@ class MongoEngineResource(resources.ModelResource):
                 'attribute': name,
                 'unique': f.unique or primary_key,
                 'null': not f.required and not primary_key,
-                'help_text': f.help_text,
+                'help_text': getattr(f, 'help_text', None),
             }
 
             # If field is not required, it does not matter if set default value,
