@@ -466,13 +466,52 @@ class MongoEngineResource(resources.ModelResource):
         return self._get_type_from_class(type_map, bundle.obj.__class__)
 
     def full_dehydrate(self, bundle, for_list=False):
+        def tpr_full_dehydrate(self, bundle, for_list=False):
+            """
+            The original Tastypie Resource full dehydrate with added except for
+            mongoengine.DoesNotExist errors
+            We will log the error and return None.
+            Given a bundle with an object instance, extract the information from it
+            to populate the resource.
+            """
+            use_in = ['all', 'list' if for_list else 'detail']
+
+            # Dehydrate each field.
+            for field_name, field_object in self.fields.items():
+                # If it's not for use in this mode, skip
+                field_use_in = getattr(field_object, 'use_in', 'all')
+                if callable(field_use_in):
+                    if not field_use_in(bundle):
+                        continue
+                else:
+                    if field_use_in not in use_in:
+                        continue
+
+                # A touch leaky but it makes URI resolution work.
+                if getattr(field_object, 'dehydrated_type', None) == 'related':
+                    field_object.api_name = self._meta.api_name
+                    field_object.resource_name = self._meta.resource_name
+
+                try:
+                    bundle.data[field_name] = field_object.dehydrate(bundle, for_list=for_list)
+                except queryset.DoesNotExist as err:
+                    print "tastypie_mongoengine/resources.py:494 - DoesNotExist:", err
+
+                # Check for an optional method to do further dehydration.
+                method = getattr(self, "dehydrate_%s" % field_name, None)
+
+                if method:
+                    bundle.data[field_name] = method(bundle)
+
+            bundle = self.dehydrate(bundle)
+            return bundle
         type_map = getattr(self._meta, 'polymorphic', {})
         if not type_map:
-            return super(MongoEngineResource, self).full_dehydrate(bundle, for_list)
+            return tpr_full_dehydrate(self, bundle, for_list)
 
         # Optimization
         if self._meta.object_class is bundle.obj.__class__:
-            return super(MongoEngineResource, self).full_dehydrate(bundle, for_list)
+            return tpr_full_dehydrate(self, bundle, for_list)
 
         resource = self._get_resource_from_class(type_map, bundle.obj.__class__)(self._meta.api_name)
         return self._wrap_polymorphic(resource, lambda: super(MongoEngineResource, self).full_dehydrate(bundle, for_list))
