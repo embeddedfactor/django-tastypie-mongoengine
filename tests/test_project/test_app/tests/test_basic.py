@@ -2,7 +2,8 @@ from __future__ import with_statement
 
 import urlparse
 
-from django.core import exceptions, urlresolvers
+from django.core import exceptions, 
+from django import urls
 from django.test import client, utils
 import json
 
@@ -26,14 +27,14 @@ class BasicTest(test_runner.MongoEngineTestCase):
     c = client.Client()
 
     def resourceListURI(self, resource_name):
-        return urlresolvers.reverse('api_dispatch_list', kwargs={'api_name': self.api_name, 'resource_name': resource_name})
+        return urls.reverse('api_dispatch_list', kwargs={'api_name': self.api_name, 'resource_name': resource_name})
 
     def resourcePK(self, resource_uri):
-        match = urlresolvers.resolve(resource_uri)
+        match = urls.resolve(resource_uri)
         return match.kwargs['pk']
 
     def resourceDetailURI(self, resource_name, resource_pk):
-        return urlresolvers.reverse('api_dispatch_detail', kwargs={'api_name': self.api_name, 'resource_name': resource_name, 'pk': resource_pk})
+        return urls.reverse('api_dispatch_detail', kwargs={'api_name': self.api_name, 'resource_name': resource_name, 'pk': resource_pk})
 
     def fullURItoAbsoluteURI(self, uri):
         scheme, netloc, path, query, fragment = urlparse.urlsplit(uri)
