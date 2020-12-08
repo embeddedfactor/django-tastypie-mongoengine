@@ -225,9 +225,9 @@ class MongoEngineModelDeclarativeMetaclass(resources.ModelDeclarativeMetaclass):
                     del(new_class.base_fields[field_name])
             if field_name in new_class.declared_fields:
                 continue
-            if len(include_fields) and field_name not in include_fields:
+            if include_fields and len(include_fields) and field_name not in include_fields:
                 del(new_class.base_fields[field_name])
-            if len(excludes) and field_name in excludes:
+            if excludes and len(excludes) and field_name in excludes:
                 del(new_class.base_fields[field_name])
 
         # Add in the new fields
