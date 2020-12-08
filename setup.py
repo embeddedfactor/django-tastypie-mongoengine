@@ -35,7 +35,7 @@ if __name__ == '__main__':
         ),
         zip_safe = False,
         install_requires = (
-            'Django>=1.11',
+            'Django>=2.0',
             'django-tastypie>=0.13.1',
             'mongoengine<=0.10.9',
             'python-dateutil>=2.1',
@@ -47,7 +47,7 @@ if __name__ == '__main__':
         ),
         test_suite = 'tests.runtests.runtests',
         tests_require = (
-            'Django>=1.11',
+            'Django>=2.0',
             'django-tastypie>=0.13.1',
             'mongoengine<=0.10.9',
             'python-dateutil>=2.1',

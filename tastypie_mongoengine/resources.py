@@ -7,7 +7,8 @@ import re
 import sys
 
 from django.conf import urls
-from django.core import exceptions, urlresolvers
+from django.core import exceptions
+from django import urls
 from django.db.models import base as models_base
 from future.utils import with_metaclass
 
@@ -30,7 +31,7 @@ except ImportError:
 from tastypie_mongoengine import fields as tastypie_mongoengine_fields
 
 from tastypie.exceptions import NotFound
-from django.core.urlresolvers import Resolver404
+from django.urls import Resolver404
 
 
 # When Tastypie accesses query terms used by QuerySet it assumes the interface of Django ORM.
@@ -1019,5 +1020,5 @@ class MongoEngineListResource(MongoEngineResource):
 
         try:
             return self._build_reverse_url(url_name, kwargs=self.resource_uri_kwargs(bundle_or_obj))
-        except urlresolvers.NoReverseMatch:
+        except urls.NoReverseMatch:
             return ''
